@@ -1,4 +1,4 @@
-﻿using Everybody.Codes.Utilities;
+﻿using Common.Utilities;
 
 namespace Everybody.Codes._2024;
 

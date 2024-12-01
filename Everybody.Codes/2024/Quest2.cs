@@ -1,5 +1,5 @@
-﻿using Everybody.Codes.Extensions;
-using Everybody.Codes.Utilities;
+﻿using Common.Extensions;
+using Common.Utilities;
 
 namespace Everybody.Codes._2024;
 
