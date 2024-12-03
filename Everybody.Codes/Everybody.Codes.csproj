@@ -20,6 +20,12 @@
   <ItemGroup>
     <TestData Include="./TestData/**" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj" />
+  </ItemGroup>
   <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
     <Copy SourceFiles="@(TestData)" DestinationFolder="$(OutputPath)/TestData/%(RecursiveDir)" SkipUnchangedFiles="true" />
   </Target>
