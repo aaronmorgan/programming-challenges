@@ -108,7 +108,6 @@ public class Day3
             }
         }
 
-
         Assert.Equal(expectedAnswer, result);
     }
 }
