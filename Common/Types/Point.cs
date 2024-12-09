@@ -12,4 +12,7 @@ public readonly struct Point(int x, int y)
 
     /// <inheritdoc />
     public override bool Equals(object? obj) => obj is Point other && X == other.X && Y == other.Y;
+    
+    public static Point operator +(Point a, Point b) => new Point(a.X + b.X, a.Y + b.Y);
+
 }
