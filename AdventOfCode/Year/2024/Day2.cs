@@ -57,7 +57,7 @@ public class Day2
         }
     }
 
-    bool IsSafe(List<int> levels)
+    private static bool IsSafe(List<int> levels)
     {
         bool ascending = levels[1] > levels[0];
 
