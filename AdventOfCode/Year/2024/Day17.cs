@@ -1,101 +1,130 @@
-﻿using Common.Utilities;
+﻿using Common.Types;
+using Common.Utilities;
 
 namespace AdventOfCode.Year._2024;
 
 public class Day17
 {
-    // see Day23_Part1_ALongWalk
     [Theory]
     [InlineData("Day17DevelopmentTesting1.txt", "4,6,3,5,6,3,5,2,1,0")]
     [InlineData("Day17.txt", "3,5,0,1,5,1,5,1,0")]
-    public void Day14_Chronospatial_Computer(string filename, string expectedAnswer)
+    public void Day14_Part1_Chronospatial_Computer(string filename, string expectedAnswer)
+    {
+        var input = InputParser.ReadAllLines("2024/" + filename).ToArray();
+        var (_, output) = RunProgramInput(Part.One, new Machine(input));
+
+        Assert.Equal(expectedAnswer, string.Join(',', output));
+    }
+
+    [Theory]
+    [InlineData("Day17DevelopmentTesting2.txt", 117_440)]
+    //[InlineData("Day17.txt", 0)]
+    public void Day14_Part2_Chronospatial_Computer(string filename, long expectedAnswer)
     {
         string[] input = InputParser.ReadAllLines("2024/" + filename).ToArray();
+        bool result;
 
-        int registerA = int.Parse(input[0].Split(":")[^1].Trim());
-        int registerB = int.Parse(input[1].Split(":")[^1].Trim());
-        int registerC = int.Parse(input[2].Split(":")[^1].Trim());
+        long i = expectedAnswer;
+        var machine = new Machine(input, expectedAnswer);
 
-        int[] program = input[4].Split(" ")[^1].Split(",").Select(int.Parse).ToArray();
-
-        List<int> output = [];
-
-        for (int i = 0; i < program.Length; i += 2)
+        while (true)
         {
-            var opcode = program[i];
-            var operand = program[i + 1];
+            var (program, output) = RunProgramInput(Part.Two, machine.SetRegisterA(i));
+
+            var b = string.Join(',', program);
+            var a = string.Join(',', output);
+
+            if (i % 100_000_000 == 0) Console.WriteLine($"{i} | {a}");
+
+            if (!b.Equals(a))
+            {
+                i++;
+                continue;
+            }
+
+            result = true;
+            break;
+        }
+
+        Assert.True(result);
+    }
+
+    private static (int[] program, IEnumerable<long> output) RunProgramInput(Part part, Machine input)
+    {
+        List<long> output = [];
+
+        for (var i = 0; i < input.Program.Length; i += 2)
+        {
+            var opcode = input.Program[i];
+            var operand = input.Program[i + 1];
 
             switch (opcode)
             {
                 case 0: // 'adv' performs division
                 {
-                    var b = GetComboOperandValue(operand);
-                    var a = (int)(registerA / Math.Pow(2, b));
-                    registerA = a;
+                    input.RegisterA = (int)(input.RegisterA / Math.Pow(2, GetComboOperandValue(operand)));
                     break;
                 }
                 case 1: // 'bxl' bitwise XOR
                 {
-                    var b = registerB ^ operand;
-                    registerB = b;
+                    input.RegisterB ^= operand;
                     break;
                 }
                 case 2: // 'bst' modulo 8
                 {
-                    var a = GetComboOperandValue(operand);
-                    var b = a % 8;
-                    registerB = b;
+                    input.RegisterB = GetComboOperandValue(operand) % 8;
                     break;
                 }
                 case 3: // 'jnz' jump to pointer.
                 {
-                    if (registerA != 0)
-                    {
-                        // Subtract 2 as we do NOT apply the normal 2 step movement in this case.
-                        i = operand - 2;
-                    }
+                    // Subtract 2 as we do NOT apply the normal 2 step movement in this case.
+                    if (input.RegisterA != 0) i = operand - 2;
 
                     break;
                 }
                 case 4: // 'bxc' bitwise XOR
                 {
-                    var a = registerB ^ registerC;
-                    registerB = a;
+                    input.RegisterB ^= input.RegisterC;
                     break;
                 }
                 case 5: // 'out' 
                 {
-                    var a = GetComboOperandValue(operand);
-                    var b = a % 8;
-                    output.Add(b);
-
+                    output.Add(GetComboOperandValue(operand) % 8);
                     break;
                 }
                 case 6: // 'bdv' 
                 {
-                    var b = GetComboOperandValue(operand);
-                    var a = (int)(registerA / Math.Pow(2, b));
-                    registerB = a;
+                    input.RegisterB = (int)(input.RegisterA / Math.Pow(2, GetComboOperandValue(operand)));
                     break;
                 }
                 case 7: // 'cdv'
                 {
-                    var b = GetComboOperandValue(operand);
-                    var a = (int)(registerA / Math.Pow(2, b));
-                    registerC = a;
+                    input.RegisterC = (int)(input.RegisterA / Math.Pow(2, GetComboOperandValue(operand)));
                     break;
                 }
                 default: throw new Exception("Invalid operand: " + opcode);
             }
+
+            // Short circuit and bail early if we're not on the right track.
+            if (part == Part.Two)
+            {
+                var isValid = true;
+                for (var j = 0; j < output.Count; j++)
+                {
+                    if (output[j] != input.Program[j])
+                    {
+                        isValid = false;
+                        break;
+                    }
+                }
+
+                if (!isValid) return (input.Program, []);
+            }
         }
 
-        string result = string.Join(',', output);
+        return (input.Program, output);
 
-        Assert.Equal(expectedAnswer, result);
-
-        return;
-
-        int GetComboOperandValue(int operand)
+        long GetComboOperandValue(int operand)
         {
             return operand switch
             {
@@ -103,11 +132,34 @@ public class Day17
                 1 => 1,
                 2 => 2,
                 3 => 3,
-                4 => registerA,
-                5 => registerB,
-                6 => registerC,
+                4 => input.RegisterA,
+                5 => input.RegisterB,
+                6 => input.RegisterC,
                 _ => throw new Exception("Invalid operand: " + operand)
             };
+        }
+    }
+
+    private class Machine
+    {
+        public long RegisterA { get; set; }
+        public long RegisterB { get; set; }
+        public long RegisterC { get; set; }
+        public int[] Program { get; }
+
+        public Machine(string[] input, long registerADefaultValue = -1)
+        {
+            RegisterA = registerADefaultValue > 0 ? registerADefaultValue : int.Parse(input[0].Split(":")[^1].Trim());
+            RegisterB = int.Parse(input[1].Split(":")[^1].Trim());
+            RegisterC = int.Parse(input[2].Split(":")[^1].Trim());
+
+            Program = input[4].Split(" ")[^1].Split(",").Select(int.Parse).ToArray();
+        }
+
+        public Machine SetRegisterA(long value)
+        {
+            RegisterA = value;
+            return this;
         }
     }
 }
