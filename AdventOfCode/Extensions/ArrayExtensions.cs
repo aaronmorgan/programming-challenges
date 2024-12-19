@@ -20,7 +20,7 @@ public static class ArrayExtensions
             sw.WriteLine(line);
         }
     }
-    
+
     /// <summary>
     /// Writes a jagged 2d array to file 'row by row'.
     /// </summary>
