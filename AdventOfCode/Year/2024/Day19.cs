@@ -26,27 +26,32 @@ public class Day19
                 // Keep shrinking the test string until we either find a towel that matches or nothing and abort.
                 var p = pattern[length..];
 
-                for (var j = p.Length; j >= 0; j--)
-                {
-                    var (isValid, stripeLength) = StripeIsValid(p[..j]);
+                (bool success, int len) = ParseString(p);
 
-                    // The towel had valid stripes but then nothing.
-                    if (!isValid && j == 0)
+                bool a = true;
+                if (success)
+                {
+                    if (len > 2)
                     {
-                        v = false;
-                        break; 
+                        (bool s, int l) = ParseString(p[..(len-1)]);
+
+                        if (s && l < len)
+                        {
+                          //  length += l;
+                          len = l;
+                        //    a = false;
+                        }
                     }
 
-                    if (!isValid) continue;
-
-                    // Increment the amount we trim from the front before search for more matching towels.
-                    length += stripeLength;
-                    break;
+              //      if (a)
+                    {
+                        length += len;
+                    }
                 }
 
-                if (length == 0 || !v) break;
+                if (!success || length == 0 || !v) break;
 
-                if (length >= pattern.Length)
+                if (length == pattern.Length)
                 {
                     result++;
                     break;
@@ -57,6 +62,30 @@ public class Day19
         Assert.Equal(expectedAnswer, result);
 
         return;
+
+        // Recursively parse the string, removing characters from the end looking
+        // for a matching towel pattern.
+        (bool success, int length) ParseString(string p)
+        {
+            for (var j = p.Length; j >= 0; j--)
+            {
+                var (isValid, stripeLength) = StripeIsValid(p[..j]);
+
+                // The towel had valid stripes but then nothing.
+                if (!isValid && j <= 0)
+                {
+                    return (false, -1);
+                }
+
+                if (!isValid) continue;
+
+                Console.WriteLine(p[..j]);
+                // Increment the amount we trim from the front before search for more matching towels.
+                return (true, stripeLength);
+            }
+
+            return (false, -1);
+        }
 
         // Validates the towel substring is a valid stripe.
         (bool isValid, int length) StripeIsValid(string stripe)
