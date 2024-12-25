@@ -16,7 +16,8 @@ public static class ConsoleUtilities
         this char[,] array,
         (int y, int x) location = default,
         List<(int y, int x)>? path = default,
-        int delayMs = 25)
+        int delayMs = 25,
+        ConsoleColor iconColor =  ConsoleColor.DarkYellow)
     {
         Console.CursorVisible = false;
         Console.WindowWidth = Math.Min(Math.Max(80, array.GetLength(1)), Console.LargestWindowWidth);
@@ -56,7 +57,7 @@ public static class ConsoleUtilities
 
         if (location != default)
         {
-            DrawIconAtPosition(location.x - startColumn, location.y - startRow);
+            DrawIconAtPosition(location.x - startColumn, location.y - startRow, iconColor);
         }
 
         if (path != null && path.Count != 0)
@@ -66,7 +67,7 @@ public static class ConsoleUtilities
             var originalColor = Console.ForegroundColor;
 
 
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.ForegroundColor = iconColor;
             foreach ((int y, int x) point in path)
             {
                 Console.SetCursorPosition(point.y, point.x);
@@ -80,7 +81,7 @@ public static class ConsoleUtilities
         Task.Delay(delayMs).Wait();
     }
 
-    private static void DrawIconAtPosition(int x, int y, ConsoleColor color = ConsoleColor.DarkYellow)
+    private static void DrawIconAtPosition(int x, int y, ConsoleColor color)
     {
         var originalLeft = Console.CursorLeft;
         var originalTop = Console.CursorTop;

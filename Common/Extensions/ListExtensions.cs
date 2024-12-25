@@ -2,6 +2,9 @@
 
 public static class ListExtensions
 {
+    /// <summary>
+    /// Converts the input list of string to a 2D char array.
+    /// </summary>
     public static char[,] ToCharArray(this List<string> input)
     {
         char[,] map = new char[input.Count, input[0].Length];
