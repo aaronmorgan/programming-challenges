@@ -1,4 +1,6 @@
-﻿namespace Common.Utilities;
+﻿using Common.Types;
+
+namespace Common.Utilities;
 
 public static class ConsoleUtilities
 {
@@ -12,14 +14,17 @@ public static class ConsoleUtilities
     /// <param name="location">The current location being processed as an overlay icon.</param>
     /// <param name="path">Draws the path as an overlay on the grid.</param>
     /// <param name="delayMs">The draw delay period in millisecons.</param>
+    /// <param name="iconColor"></param>
     public static void DrawToConsole(
         this char[,] array,
-        (int y, int x) location = default,
+        Point location = default,
         List<(int y, int x)>? path = default,
         int delayMs = 25,
-        ConsoleColor iconColor =  ConsoleColor.DarkYellow)
+        ConsoleColor iconColor = ConsoleColor.DarkYellow)
     {
+        Console.Clear();
         Console.CursorVisible = false;
+
         Console.WindowWidth = Math.Min(Math.Max(80, array.GetLength(1)), Console.LargestWindowWidth);
         Console.WindowHeight = Math.Min(Math.Max(80, array.GetLength(0)), Console.LargestWindowHeight);
 
@@ -31,18 +36,18 @@ public static class ConsoleUtilities
         // If the array is still too large for the console window draw what we can with the 'location' at the center.
         if (Console.WindowHeight < array.GetLength(0) || Console.WindowWidth < array.GetLength(1))
         {
-            startRow = Math.Max(0, location.y - 20);
-            endRow = Math.Max(0, location.y + 20);
-            startColumn = Math.Max(0, location.x - 20);
-            endColumn = Math.Max(0, location.x + 20);
+            startRow = Math.Max(0, location.Y - 20);
+            endRow = Math.Max(0, location.Y + 20);
+            startColumn = Math.Max(0, location.X - 20);
+            endColumn = Math.Max(0, location.X + 20);
         }
 
         // SetBufferSize() is Windows only.
-        if (OperatingSystem.IsWindows())
-        {
-            Console.SetBufferSize(Math.Max(Console.WindowWidth, endColumn - startColumn),
-                Math.Max(Console.WindowHeight, endRow - startRow));
-        }
+        // if (OperatingSystem.IsWindows())
+        // {
+        //     Console.SetBufferSize(Math.Max(Console.WindowWidth, endColumn - startColumn),
+        //         Math.Max(Console.WindowHeight, endRow - startRow));
+        // }
 
         for (var row = startRow; row < endRow; row++)
         {
@@ -57,7 +62,7 @@ public static class ConsoleUtilities
 
         if (location != default)
         {
-            DrawIconAtPosition(location.x - startColumn, location.y - startRow, iconColor);
+            DrawIconAtPosition(location.X - startColumn, location.Y - startRow, iconColor);
         }
 
         if (path != null && path.Count != 0)
