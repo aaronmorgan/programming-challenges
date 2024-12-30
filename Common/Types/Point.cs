@@ -30,4 +30,6 @@ public readonly struct Point(int x, int y) : IEquatable<Point>
     }
 
     public static Point operator +(Point a, Point b) => new(a.X + b.X, a.Y + b.Y);
+
+    public static Point operator -(Point a, Point b) => new(a.X - Math.Abs(a.X - b.X), a.Y - Math.Abs(a.Y - b.Y));
 }
