@@ -64,7 +64,7 @@ public class Day8
 
                     var point = new Point(x, y);
 
-                    if (IsWithinBounds(point)) antinodes.Add(point);
+                    if (!IsOutOfBounds(point)) antinodes.Add(point);
                 }
             }
         }
@@ -73,9 +73,6 @@ public class Day8
 
         return;
 
-        bool IsWithinBounds(Point point)
-        {
-            return point.X >= 0 && point.X < input.GetLength(0) && point.Y >= 0 && point.Y < input.GetLength(1);
-        }
+        bool IsOutOfBounds(Point p) => p.X < 0 || p.X > input.GetLength(1) - 1 || p.Y < 0 || p.Y > input.GetLength(0) - 1;
     }
 }

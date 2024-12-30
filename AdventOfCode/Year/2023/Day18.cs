@@ -76,6 +76,6 @@ public class Day18
 
         var polygonArea = ShoelaceFormula.CalculatePolygonArea(points, boundaryLength);
 
-        Assert.Equal(polygonArea, expectedAnswer);
+        Assert.Equal(expectedAnswer, polygonArea);
     }
 }
