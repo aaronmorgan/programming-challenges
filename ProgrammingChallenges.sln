@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Everybody.Codes", "Everybod
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{962D1102-DF61-4CC2-B1ED-AD24276B69D8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codyssi", "Codyssi\Codyssi.csproj", "{F202229C-47C7-4C46-9B5F-8F6E98360AE3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{962D1102-DF61-4CC2-B1ED-AD24276B69D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{962D1102-DF61-4CC2-B1ED-AD24276B69D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{962D1102-DF61-4CC2-B1ED-AD24276B69D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F202229C-47C7-4C46-9B5F-8F6E98360AE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F202229C-47C7-4C46-9B5F-8F6E98360AE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F202229C-47C7-4C46-9B5F-8F6E98360AE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F202229C-47C7-4C46-9B5F-8F6E98360AE3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
