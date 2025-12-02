@@ -2,76 +2,124 @@
 
 namespace AdventOfCode.Year._2025;
 
-public class Day1
+public class Day2
 {
     [Theory]
-    [InlineData("Day1DevelopmentTesting1.txt", 3, 6)]
-    [InlineData("Day1DevelopmentTesting2.txt", 1, 2)]
-    [InlineData("Day1DevelopmentTesting3.txt", 1, 6)]
-    [InlineData("Day1DevelopmentTesting4.txt", 0, 10)]
-    [InlineData("Day1DevelopmentTesting5.txt", 0, 1)]
-    [InlineData("Day1DevelopmentTesting6.txt", 1, 3)]
-    [InlineData("Day1.txt", 982, 6067)] // too low, 7049 too high | 6073 | 6097 | 6510 | 6480
-    public void Day1_Part1_Secret_Entrance(string filename, int expectedAnswerPart1, int expectedAnswerPart2)
+    [InlineData("Day2DevelopmentTesting1.txt", 1227775554)]
+    [InlineData("Day2.txt", 30608905813)]
+    public void Day2_Part1_Gift_Shop(string filename, long expectedAnswerPart1)
     {
-        int part1ZeroCount = 0, part2ZeroCount = 0, dialPosition = 50;
-        const int dialSize = 99;
+        long sumInvalidIds = 0;
 
-        foreach (var line in InputParser.ReadAllLines("2025/" + filename))
+        string[] inputIds = InputParser.ReadAllText("2025/" + filename).Split(',');
+
+        foreach (string inputId in inputIds)
         {
-            char direction = line[..1][0];
-            int steps = int.Parse(line[1..]);
+            long start = long.Parse(inputId.Split('-')[0]);
+            long end = long.Parse(inputId.Split('-')[1]);
 
-            switch (direction)
+            for (long i = start; i <= end; i++)
             {
-                case 'L':
-                {
-                    dialPosition -= steps;
-                    break;
-                }
-                case 'R':
-                {
-                    dialPosition += steps;
-                    break;
-                }
-            }
+                var iAsString = i.ToString();
+                var length = iAsString.Length;
 
-            dialPosition = MoveDialToPosition(dialPosition);
+                if (iAsString.Length % 2 == 0)
+                {
+                    if (length == 2)
+                    {
+                        var part1 = iAsString[0..(length / 2)];
+                        var part2 = iAsString[(length / 2)..];
 
-            if (dialPosition == 0)
-            {
-                part1ZeroCount++;
+                        //E.g. 1 - 1 would be invalid id '11'.
+                        if (part1.Equals(part2))
+                        {
+                            sumInvalidIds += i;
+                        }
+                    }
+                    else
+                    {
+                        var a = iAsString[..(length / 2)];
+                        var b = iAsString[(length / 2)..];
+
+                        if (a.Equals(b))
+                        {
+                            sumInvalidIds += i;
+                        }
+                    }
+                }
             }
         }
 
-        Assert.Equal(expectedAnswerPart1, part1ZeroCount);
-        Assert.Equal(expectedAnswerPart2, part2ZeroCount);
+        Assert.Equal(expectedAnswerPart1, sumInvalidIds);
+    }
+
+    [Theory]
+    [InlineData("Day2DevelopmentTesting1.txt", 4174379265)]
+    [InlineData("Day2.txt", 31898925685)]
+    public void Day2_Part2_Gift_Shop(string filename, long expectedAnswer)
+    {
+        long sumInvalidIds = 0;
+
+        string[] inputIds = InputParser.ReadAllText("2025/" + filename).Split(',');
+
+        foreach (string inputId in inputIds)
+        {
+            long start = long.Parse(inputId.Split('-')[0]);
+            long end = long.Parse(inputId.Split('-')[1]);
+
+            for (long i = start; i <= end; i++)
+            {
+                var iAsString = i.ToString();
+                var length = iAsString.Length;
+
+                if (length == 1) continue;
+
+                // Check if we're dealing with a string like 11 or 999.
+                if (length is 2 or 3)
+                {
+                    var strings = iAsString.Chunk(1).Select(chunk => new string(chunk)).ToArray();
+
+                    if (AreAllStringsSame(strings))
+                    {
+                        sumInvalidIds += i;
+                        continue;
+                    }
+                }
+
+                // Holds all possible chunk sizes from 1/2 the length of the string going down to 2 (largest to smallest).
+                List<int> sizes = [];
+
+                int j = length / 2;
+                sizes.Add(j);
+
+                for (var z = 1; z < j; z++)
+                {
+                    sizes.Add(z);
+                }
+
+                sizes = sizes.OrderByDescending(x => x).ToList();
+
+                // Iterate over all the possible chunk sizes for our number, e.g. if 345345, there is 2 and 3.
+                foreach (var size in sizes)
+                {
+                    string[] strings = iAsString
+                        .Chunk(size)
+                        .Select(chunk => new string(chunk)).ToArray();
+
+                    if (AreAllStringsSame(strings))
+                    {
+                        sumInvalidIds += i;
+                        break;
+                    }
+                }
+            }
+        }
+
+        Assert.Equal(expectedAnswer, sumInvalidIds);
 
         return;
 
-        // Move the dial the required number of steps, compensating for steps > 100 that
-        // take us around the dial multiple times.
-        int MoveDialToPosition(int position)
-        {
-            do
-            {
-                switch (position)
-                {
-                    case 0:
-                        part2ZeroCount++;
-                        break;
-                    case < 0:
-                        position = dialSize + 1 - Math.Abs(position);
-                        part2ZeroCount++;
-                        break;
-                    case > dialSize:
-                        position -= dialSize + 1;
-                        part2ZeroCount++;
-                        break;
-                }
-            } while (position is > dialSize or < 0);
-
-            return position;
-        }
+        // Returns true if all elements in the array are the same.
+        static bool AreAllStringsSame(string[] array) => array.All(s => s == array[0]);
     }
 }
