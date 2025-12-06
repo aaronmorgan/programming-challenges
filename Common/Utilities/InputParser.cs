@@ -62,4 +62,34 @@ public static class InputParser
         
         return array;
     }
+    
+    /// <summary>
+    /// Returns the input file with whitespace separated values as a 2d string array. 
+    /// </summary>
+    public static string[,] ReadSpaceSeparatedFile(string filename)
+    {
+        string[] lines = File.ReadAllLines($"./TestData/{filename}");
+
+        if (lines.Length == 0)
+        {
+            return new string[0, 0];
+        }
+
+        // Determine the maximum number of columns (words) in any line.
+        int maxColumns = lines.Max(line => line.Split([' '], StringSplitOptions.RemoveEmptyEntries).Length);
+
+        string[,] data = new string[lines.Length, maxColumns];
+
+        for (int i = 0; i < lines.Length; i++)
+        {
+            string[] words = lines[i].Split([' '], StringSplitOptions.RemoveEmptyEntries);
+            
+            for (int j = 0; j < words.Length; j++)
+            {
+                data[i, j] = words[j];
+            }
+        }
+
+        return data;
+    }
 }
